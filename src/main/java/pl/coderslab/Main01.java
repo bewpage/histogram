@@ -1,14 +1,10 @@
 package pl.coderslab;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class Main01 {
   public static void main(String[] args) {
@@ -25,10 +21,17 @@ public class Main01 {
     try {
       BufferedImage img = ImageIO.read(file);
 
-      int maxRed = 0;
+      int redMax = 0;
       int[] redArray = new int[256];
+      int[] tmpRedArray = new int[256];
+
+      int greenMax = 0;
       int[] greenArray = new int[256];
+      int[] tmpGreenArray = new int[256];
+
+      int blueMax = 0;
       int[] blueArray = new int[256];
+      int[] tmpBlueArray = new int[256];
 
       for (int x = 0; x < img.getWidth(); x++) {
         for (int y = 0; y < img.getHeight(); y++) {
@@ -37,37 +40,48 @@ public class Main01 {
           int red = color.getRed();
           int green = color.getGreen();
           int blue = color.getBlue();
+
           // count histogram for red value
-          redArray[red] = redArray[red] + 1;
-          greenArray[green] = greenArray[green] + 1;
-          blueArray[blue] = blueArray[blue] + 1;
+          tmpRedArray[red] = tmpRedArray[red] + 1;
+          redMax = currentMax(tmpRedArray[red], redMax);
+          redArray[red] = (tmpRedArray[red] * MAX) / redMax;
+
+          tmpGreenArray[green] = tmpGreenArray[green] + 1;
+          greenMax = currentMax(tmpGreenArray[green], greenMax);
+          greenArray[red] = (tmpGreenArray[green] * MAX) / greenMax;
+
+          tmpBlueArray[blue] = tmpBlueArray[blue] + 1;
+          blueMax = currentMax(tmpBlueArray[blue], blueMax);
+          blueArray[blue] = (tmpBlueArray[blue] * MAX) / blueMax;
         }
       }
 
-      int[] redHistogram = createColorHistogram(redArray);
-      printHistogram(redHistogram, "Red");
+      System.out.println("red max " + redMax);
+      System.out.println("green max " + greenMax);
+      System.out.println("blue max " + blueMax);
 
-      int[] greenHistogram = createColorHistogram(greenArray);
-      printHistogram(greenHistogram, "Green");
+      printHistogram(redArray, "Red");
 
-      int[] blueHistogram = createColorHistogram(blueArray);
-      printHistogram(blueHistogram, "Blue");
+      printHistogram(greenArray, "Green");
+
+      printHistogram(blueArray, "Blue");
 
     } catch (IOException e) {
       System.out.println(e.getMessage());
     }
   }
 
-  private static int[] createColorHistogram(int[] colorArray) {
-    int maxValueForColor = Collections.max(Arrays.asList(ArrayUtils.toObject(colorArray)));
-    int[] tmp = new int[256];
+  // this is working somehow
+  private static int calculateHistogram(int rgbValue, int[] array) {
+    array[rgbValue] = array[rgbValue] + 1;
+    return array[rgbValue];
+  }
 
-    for (int i = 0; i < colorArray.length; i++) {
-      if (colorArray[i] != 0) {
-        tmp[i] = (colorArray[i] * MAX) / maxValueForColor;
-      }
+  private static int currentMax(int rgbValue, int currentMax) {
+    if (rgbValue > currentMax) {
+      currentMax = rgbValue;
     }
-    return tmp;
+    return currentMax;
   }
 
   private static void printHistogram(int[] colorValues, String colorName) {
