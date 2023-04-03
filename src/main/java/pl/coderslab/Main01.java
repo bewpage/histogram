@@ -1,4 +1,3 @@
 package pl.coderslab;
 
-public class Main01 {
-}
+public class Main01 {}
