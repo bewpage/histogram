@@ -1,27 +1,84 @@
 package pl.coderslab;
 
+import pl.coderslab.entity.HistColor;
+import pl.coderslab.entity.HistDao;
+import pl.coderslab.entity.HistImage;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main01 {
+
   public static void main(String[] args) {
     // test
     test(IMAGE_FILE_PATH);
   }
 
+  static HistDao histDao = new HistDao();
   protected static int MAX = 50;
-
   private static final String IMAGE_FILE_PATH = "lenna.png";
+
+  // try to use DB for creating histogram
+  private static void testCreateImage(String pathToFile) {
+    File fileData = new File(pathToFile);
+    Path file = Paths.get(pathToFile);
+    try {
+      if (Files.notExists(file)) {
+        System.out.printf("Sorry, but this file %s not exist%n", pathToFile);
+        System.exit(1);
+      }
+      BufferedImage img = ImageIO.read(fileData);
+      String imageName = pathToFile.split("\\.")[0];
+      int imageWidth = img.getWidth();
+      int imageHeight = img.getHeight();
+      // create new instance of image
+      HistImage histImage = new HistImage(imageName, imageWidth, imageHeight);
+
+      // this is only for checking
+      String histImageInfo;
+
+      histImageInfo = histImage.toString();
+      System.out.println(histImageInfo);
+
+      // create entity in DB
+      histDao.createImage(histImage);
+
+      // check updated information
+      histImageInfo = histImage.toString();
+      System.out.println(histImageInfo);
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   private static void test(String pathToFile) {
     File file = new File(pathToFile);
     try {
       BufferedImage img = ImageIO.read(file);
 
+      String imageName = pathToFile.split("\\.")[0];
+      int imageWidth = img.getWidth();
+      int imageHeight = img.getHeight();
+
+      // create new instance of image
+      HistImage histImage = new HistImage(imageName, imageWidth, imageHeight);
+      // create entity in DB
+      // and image ID should be set
+      histDao.createImage(histImage);
+
       int redMax = 0;
+      HistColor histColorRed = new HistColor(histImage.getId(), "red");
+      // check image data
+      System.out.println(histImage.toString());
+
+      // temp data structure for calculations
       int[] redArray = new int[256];
       int[] tmpRedArray = new int[256];
 
@@ -33,8 +90,8 @@ public class Main01 {
       int[] blueArray = new int[256];
       int[] tmpBlueArray = new int[256];
 
-      for (int x = 0; x < img.getWidth(); x++) {
-        for (int y = 0; y < img.getHeight(); y++) {
+      for (int x = 0; x < imageWidth; x++) {
+        for (int y = 0; y < imageHeight; y++) {
           int pixel = img.getRGB(x, y);
           Color color = new Color(pixel);
           int red = color.getRed();
@@ -45,6 +102,8 @@ public class Main01 {
           tmpRedArray[red] = tmpRedArray[red] + 1;
           redMax = currentMax(tmpRedArray[red], redMax);
           redArray[red] = (tmpRedArray[red] * MAX) / redMax;
+          // and add values to color object
+          histColorRed.histColorValuesArray[red].setNumberOfPixels(redArray[red]);
 
           tmpGreenArray[green] = tmpGreenArray[green] + 1;
           greenMax = currentMax(tmpGreenArray[green], greenMax);
@@ -60,21 +119,20 @@ public class Main01 {
       System.out.println("green max " + greenMax);
       System.out.println("blue max " + blueMax);
 
-      printHistogram(redArray, "Red");
+      histColorRed.printHistogram();
 
-      printHistogram(greenArray, "Green");
+      // add values to DB for color RED
+      histDao.createHistColor(histColorRed);
 
-      printHistogram(blueArray, "Blue");
+      // printHistogram(redArray, "Red");
+
+      // printHistogram(greenArray, "Green");
+
+      // printHistogram(blueArray, "Blue");
 
     } catch (IOException e) {
       System.out.println(e.getMessage());
     }
-  }
-
-  // this is working somehow
-  private static int calculateHistogram(int rgbValue, int[] array) {
-    array[rgbValue] = array[rgbValue] + 1;
-    return array[rgbValue];
   }
 
   private static int currentMax(int rgbValue, int currentMax) {
