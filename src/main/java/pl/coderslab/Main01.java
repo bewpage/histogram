@@ -3,6 +3,7 @@ package pl.coderslab;
 import pl.coderslab.entity.HistColor;
 import pl.coderslab.entity.HistDao;
 import pl.coderslab.entity.HistImage;
+import pl.coderslab.entity.HistImages;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,7 +18,9 @@ public class Main01 {
 
   public static void main(String[] args) {
     // test
-    test(IMAGE_FILE_PATH);
+    // createHistogramForPicture(IMAGE_FILE_PATH);
+
+    testPrintAllImages();
   }
 
   static HistDao histDao = new HistDao();
@@ -58,7 +61,7 @@ public class Main01 {
     }
   }
 
-  private static void test(String pathToFile) {
+  private static void createHistogramForPicture(String pathToFile) {
     File file = new File(pathToFile);
     try {
       BufferedImage img = ImageIO.read(file);
@@ -133,6 +136,14 @@ public class Main01 {
     } catch (IOException e) {
       System.out.println(e.getMessage());
     }
+  }
+
+  private static void testPrintAllImages() {
+    HistImages allImages = new HistImages();
+
+    histDao.findAllImages();
+
+    System.out.println(allImages.toString());
   }
 
   private static int currentMax(int rgbValue, int currentMax) {
