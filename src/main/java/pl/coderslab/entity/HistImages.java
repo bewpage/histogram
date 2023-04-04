@@ -36,7 +36,8 @@ public class HistImages {
         int width = histImage.getWidth();
         int height = histImage.getHeight();
         String test =
-            String.format("{ id: %s, name: %s, width: %s, height: %s }", id, name, width, height);
+            String.format(
+                "{ id: %s, name: %s, width: %s, height: %s } \n", id, name, width, height);
         line.append(test);
       }
       return line.toString();

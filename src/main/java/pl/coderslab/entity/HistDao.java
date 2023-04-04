@@ -3,7 +3,6 @@ package pl.coderslab.entity;
 import pl.coderslab.DbUtils;
 
 import java.sql.*;
-import java.util.Arrays;
 
 public class HistDao {
 
@@ -118,25 +117,16 @@ public class HistDao {
   // ---- FIND ALL IMAGES ----
   private static final String FIND_ALL_IMAGES_QUERY = "SELECT * FROM hist_images";
 
-  public HistImages findAllImages() {
-    HistImages histImages = new HistImages();
-
+  public void findAllImages(HistImages currentHistImages) {
     try (Connection conn = DbUtils.connectHistDB();
         Statement stmt = conn.createStatement();
         ResultSet resultSet = stmt.executeQuery(FIND_ALL_IMAGES_QUERY)) {
-      while (!resultSet.next()) {
+      while (resultSet.next()) {
         HistImage createImage = createImg(resultSet);
-        histImages.addImages(createImage);
+        currentHistImages.addImages(createImage);
       }
-      return histImages;
     } catch (SQLException | ImageNotFoundException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private HistImage[] addToArray(HistImage img, HistImage[] imgs) {
-    HistImage[] tmp = Arrays.copyOf(imgs, imgs.length + 1);
-    tmp[imgs.length] = img;
-    return tmp;
   }
 }

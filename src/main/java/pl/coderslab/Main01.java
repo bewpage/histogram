@@ -141,7 +141,7 @@ public class Main01 {
   private static void testPrintAllImages() {
     HistImages allImages = new HistImages();
 
-    histDao.findAllImages();
+    histDao.findAllImages(allImages);
 
     System.out.println(allImages.toString());
   }
