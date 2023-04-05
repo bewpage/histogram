@@ -27,22 +27,24 @@ public class HistImages {
   @Override
   public String toString() {
     StringBuilder line = new StringBuilder();
+    String result = "";
     if (this.histImages.length == 0) {
       System.out.println("Sorry, but images value are empty");
+      result = "{}";
     } else {
       for (HistImage histImage : this.histImages) {
         long id = histImage.getId();
         String name = histImage.getName();
         int width = histImage.getWidth();
         int height = histImage.getHeight();
-        String test =
+        String msg =
             String.format(
                 "{ id: %s, name: %s, width: %s, height: %s } \n", id, name, width, height);
-        line.append(test);
+        line.append(msg);
       }
-      return line.toString();
+      result = line.toString();
     }
 
-    return "HistImages{" + "histImages=" + Arrays.toString(histImages) + '}';
+    return result;
   }
 }

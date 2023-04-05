@@ -18,13 +18,13 @@ public class CreateHistogram {
   public static void main(String[] args) {
     /* test for creating histogram for file and save image data in DB */
     createHistogramForPicture(IMAGE_FILE_PATH);
-
-    /* here is method for get all images and print out in console */
-    // testPrintAllImages();
   }
 
   static HistDao histDao = new HistDao();
   protected static int MAX = 50;
+  /* hardcoded file name
+  * please chang it to correct one
+  * */
   private static final String IMAGE_FILE_PATH = "lenna.png";
 
   private static void createHistogramForPicture(String pathToFile) {
