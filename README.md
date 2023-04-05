@@ -1,323 +1,47 @@
 # Histogram
 
-Napisz program do rysowania poziomych tekstowych histogramów zdjęcia.
+## Overview
 
-Każdy kolor (czerwony, zielony, niebieski) ma mieć własny histogram.\
-Każdy z 256 możliwych poziomów intensywności ma mieć swój słupek.\
-Do rysowania słupków możesz wykorzystać znak gwiazdki `*`.\
-Maksymalna wysokość słupka to 50.
-Wartość ta może być polem w klasie (`protected static`).\
-W wersji rozszerzonej programu możesz wykorzystać parametr uruchomieniowy programu do określenia wysokości słupka.
+RGB Histogram is a simple program written in Java that generates RGB channel histograms for photos.
+These histograms show the distribution of pixel values for each channel (red, green, blue) in the selected photo,
+which can be useful for image analysis, photo editing.
+The program uses a MySQL database to store information about photos and their histograms.
 
-Aby określić wysokość słupka, dla danego koloru najpierw znajdź poziom intensywności z największą liczbą pikseli.
-Ten poziom jasności będzie miał 50 gwiazdek.
-Inne będą miały odpowiednio mniej (skalowanie).
+## Requirements
 
-Dane przechowuj w jednej dwuwymiarowej tablicy o rozmiarze 3 x 256.
+- Java (JDK),
+- MySQL Server,
+- MySQL Connector/J (JDBC driver for MySQL)
 
-Do otrzymania poziomu intensywności każdego z kolorów możesz użyć kodu
+## Configuration
+
+- Create a database:
+    - in `db` folder you will find `schemas.sql` file for DB and tables,
+- Source image file:
+    - you will need to specify path to image file in `CreateHistogram` class,
+  ```java
+    private static final String IMAGE_FILE_PATH = <PATH_TO_IMAGE_FILE>;
+    ```
+    - [Test photo](https://en.wikipedia.org/wiki/Lenna)
+      you can [download from here ](https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png?download).
+- Graph height is set in class `CreateHistogram`:
 
 ```java
-File file=new File(pathToFile);
-BufferedImage img=ImageIO.read(file);
-for(int x=0;x<img.getWidth();x++){
-    for(int y=0;y<img.getHeight();y++){
-        int pixel=img.getRGB(x,y);
-        Color color=new Color(pixel);
-        int red=color.getRed();
-        int green=color.getGreen();
-        int blue=color.getBlue();
-    }
-}
+ protected static int MAX=50;
 ```
 
-Ścieżkę do pliku możesz zapisać bezpośrednio w programie lub przekazywać jako parametr uruchomieniowy.
+## Run the example
 
-**Wypisz każdy z histogramów na konsoli.**
+The running program will load the selected photo, calculate histograms for the RGB channels,
+and then save this information in a MySQL database or print out histogram in console.
+You can also view previously saved histograms and delete them from the database.
 
-W wersji rozszerzonej programu **zapisz także histogramy do tabel w bazie danych.**\
-Tabela "hist_images" powinna mieć kolumny:
+To run some examples:
 
-* id (autoinkrementowany klucz główny)
-* name (nazwa pliku, nie ścieżka)
-* width (szerokość zdjęcia)
-* height (wysokośc zdjęcia)
+- to see console print histogram:
+    - run this method `createHistogramForPicture` in class `CreateHistogram`,
+- to see list of all images in DB:
+    - run this method `showAllImages` in class `HistogramShowImages`,
 
-Tabela "hist_colors" powinna mieć kolumny:
+Have fun!
 
-* image_id (klucz zewnętrzny do kolumy id w tabeli hist_images)
-* color (nazwa koloru, jedna z "red", "green", "blue")
-* intensity (poziom intensywności koloru 0-255)
-* number_of_pixels (liczba pikseli o danej intensywności)
-
-Dobierz odpowienie typy kolumn.\
-Dla hist_colors użyj `PRIMARY KEY (image_id, color, intensity)`.
-
-Po przetworzeniu każdego zdjęcia w tabeli hist_images powinien pojawić się jeden nowy rekord,
-a w hist_colors powinno się ich pojawić 3 x 255.
-
-[Testowe zdjęcie](https://en.wikipedia.org/wiki/Lenna)
-możesz [pobrać stąd](https://upload.wikimedia.org/wikipedia/en/7/7d/Lenna_%28test_image%29.png?download).
-
-**Wersję rozszerzoną programu zrób za pomocą dziedziczenia wersji podstawowej.**
-
-Przykładowy wynik na konsoli dla jednego z kolorów:
-
-```
-0:
-1:
-2:
-3:
-4:
-5:
-6:
-7:
-8:
-9:
-10:
-11:
-12:
-13:
-14:
-15:
-16:
-17:
-18:
-19:
-20:
-21:
-22:
-23:
-24:
-25:
-26:
-27:
-28:
-29:
-30:
-31:
-32:
-33:
-34:
-35:
-36:
-37:
-38:
-39:
-40:
-41:
-42:
-43:
-44:
-45:
-46:
-47: *
-48: *
-49: **
-50: ***
-51: *****
-52: *******
-53: *********
-54: ************
-55: *****************
-56: *******************
-57: *************************
-58: ***************************
-59: *********************************
-60: ************************************
-61: **************************************
-62: ******************************************
-63: *********************************************
-64: *********************************************
-65: *********************************************
-66: ********************************************
-67: ********************************************
-68: ********************************************
-69: ********************************************
-70: ********************************************
-71: **********************************************
-72: *********************************************
-73: **********************************************
-74: ***********************************************
-75: **************************************************
-76: *************************************************
-77: ************************************************
-78: *************************************************
-79: *************************************************
-80: **********************************************
-81: **********************************************
-82: ***********************************************
-83: **********************************************
-84: *******************************************
-85: *******************************************
-86: *********************************************
-87: *********************************************
-88: *********************************************
-89: ********************************************
-90: *********************************************
-91: ***********************************************
-92: **********************************************
-93: *********************************************
-94: ***********************************************
-95: **********************************************
-96: ******************************************
-97: *******************************************
-98: *****************************************
-99: *******************************************
-100: *****************************************
-101: ****************************************
-102: ***************************************
-103: ******************************************
-104: ****************************************
-105: ****************************************
-106: ****************************************
-107: ***************************************
-108: ****************************************
-109: ***************************************
-110: ***************************************
-111: ***************************************
-112: ***************************************
-113: **************************************
-114: *****************************************
-115: ****************************************
-116: ******************************************
-117: ********************************************
-118: ********************************************
-119: ***********************************************
-120: ********************************************
-121: **********************************************
-122: *******************************************
-123: ********************************************
-124: ******************************************
-125: ******************************************
-126: ***************************************
-127: ********************************
-128: **********************************
-129: ******************************
-130: ****************************
-131: ***************************
-132: ***********************
-133: ********************
-134: *******************
-135: *****************
-136: ***************
-137: ***************
-138: *************
-139: *************
-140: ************
-141: *************
-142: ************
-143: *************
-144: ************
-145: *************
-146: ************
-147: ************
-148: ************
-149: ***********
-150: ***********
-151: *************
-152: ************
-153: *************
-154: **************
-155: *************
-156: *************
-157: *************
-158: **************
-159: ***************
-160: ************
-161: **************
-162: *************
-163: **************
-164: ************
-165: ************
-166: ************
-167: *************
-168: ************
-169: ************
-170: ************
-171: ************
-172: ***********
-173: ***********
-174: ***********
-175: **********
-176: **********
-177: *********
-178: *********
-179: *********
-180: *********
-181: **********
-182: ********
-183: *********
-184: ********
-185: *********
-186: ********
-187: *******
-188: ********
-189: *******
-190: ******
-191: ******
-192: ****
-193: *****
-194: ****
-195: ***
-196: **
-197: **
-198: **
-199: **
-200: *
-201: *
-202: *
-203: *
-204: *
-205: *
-206:
-207:
-208:
-209:
-210:
-211:
-212:
-213:
-214:
-215:
-216:
-217:
-218:
-219:
-220:
-221:
-222:
-223:
-224:
-225:
-226:
-227:
-228:
-229:
-230:
-231:
-232:
-233:
-234:
-235:
-236:
-237:
-238:
-239:
-240:
-241:
-242:
-243:
-244:
-245:
-246:
-247:
-248:
-249:
-250:
-251:
-252:
-253:
-254:
-255:
-```
