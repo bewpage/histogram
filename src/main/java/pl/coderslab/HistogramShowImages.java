@@ -13,9 +13,7 @@ public class HistogramShowImages {
   static HistDao histDao = new HistDao();
 
   private static void showAllImages() {
-    HistImages allImages = new HistImages();
-
-    histDao.findAllImages(allImages);
+    HistImages allImages = histDao.findAllImages();
 
     System.out.println(allImages.toString());
   }

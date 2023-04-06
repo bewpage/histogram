@@ -117,14 +117,16 @@ public class HistDao {
   // ---- FIND ALL IMAGES ----
   private static final String FIND_ALL_IMAGES_QUERY = "SELECT * FROM hist_images";
 
-  public void findAllImages(HistImages currentHistImages) {
+  public HistImages findAllImages() {
     try (Connection conn = DbUtils.connectHistDB();
         Statement stmt = conn.createStatement();
         ResultSet resultSet = stmt.executeQuery(FIND_ALL_IMAGES_QUERY)) {
+      HistImages currentHistImages = new HistImages();
       while (resultSet.next()) {
         HistImage createImage = createImg(resultSet);
         currentHistImages.addImages(createImage);
       }
+      return currentHistImages;
     } catch (SQLException | ImageNotFoundException e) {
       throw new RuntimeException(e);
     }
