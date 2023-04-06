@@ -21,10 +21,9 @@ public class CreateHistogram {
   }
 
   static HistDao histDao = new HistDao();
+  protected static int COLOR_LENGTH = 256;
   protected static int MAX = 50;
-  /* hardcoded file name
-  * please chang it to correct one
-  * */
+  /* hardcoded file name please change it to correct one */
   private static final String IMAGE_FILE_PATH = "lenna.png";
 
   private static void createHistogramForPicture(String pathToFile) {
@@ -46,16 +45,13 @@ public class CreateHistogram {
        * maybe I will need to check how to keep only one temporary array plus histogram object
        * */
       int redMax = 0;
-      int[] redArray = new int[256];
-      int[] tmpRedArray = new int[256];
+      int[] redArray = new int[COLOR_LENGTH];
 
       int greenMax = 0;
-      int[] greenArray = new int[256];
-      int[] tmpGreenArray = new int[256];
+      int[] greenArray = new int[COLOR_LENGTH];
 
       int blueMax = 0;
-      int[] blueArray = new int[256];
-      int[] tmpBlueArray = new int[256];
+      int[] blueArray = new int[COLOR_LENGTH];
 
       for (int x = 0; x < img.getWidth(); x++) {
         for (int y = 0; y < img.getHeight(); y++) {
@@ -66,27 +62,34 @@ public class CreateHistogram {
           int blue = color.getBlue();
 
           // count histogram for red value
-          tmpRedArray[red] = tmpRedArray[red] + 1;
-          redMax = currentMax(tmpRedArray[red], redMax);
-          redArray[red] = (tmpRedArray[red] * MAX) / redMax;
-          // and add final histogram values to color object for RED
-          histColorRed.histColorValuesArray[red].setNumberOfPixels(redArray[red]);
+          redArray[red] = redArray[red] + 1;
+          redMax = currentMax(redArray[red], redMax);
 
-          tmpGreenArray[green] = tmpGreenArray[green] + 1;
-          greenMax = currentMax(tmpGreenArray[green], greenMax);
-          greenArray[green] = (tmpGreenArray[green] * MAX) / greenMax;
-          // and add final histogram values to color object for GREEN
-          histColorGreen.histColorValuesArray[green].setNumberOfPixels(greenArray[green]);
+          greenArray[green] = greenArray[green] + 1;
+          greenMax = currentMax(greenArray[green], greenMax);
 
-          tmpBlueArray[blue] = tmpBlueArray[blue] + 1;
-          blueMax = currentMax(tmpBlueArray[blue], blueMax);
-          blueArray[blue] = (tmpBlueArray[blue] * MAX) / blueMax;
-          // and add final histogram values to color object for BLUE
-          histColorBlue.histColorValuesArray[blue].setNumberOfPixels(blueArray[blue]);
+          blueArray[blue] = blueArray[blue] + 1;
+          blueMax = currentMax(blueArray[blue], blueMax);
         }
       }
 
-      System.out.println();
+      for (int i = 0; i < COLOR_LENGTH; i++) {
+        // count histogram value for RED
+        int tmpRed = (redArray[i] * MAX) / redMax;
+        redArray[i] = tmpRed;
+        // and add final histogram values to color object for RED
+        histColorRed.histColorValuesArray[i].setNumberOfPixels(redArray[i]);
+
+        int tmpGreen = (greenArray[i] * MAX) / greenMax;
+        greenArray[i] = tmpGreen;
+        // and add final histogram values to color object for GREEN
+        histColorGreen.histColorValuesArray[i].setNumberOfPixels(greenArray[i]);
+
+        int tmpBlue = (blueArray[i] * MAX) / blueMax;
+        blueArray[i] = tmpBlue;
+        // and add final histogram values to color object for BLUE
+        histColorBlue.histColorValuesArray[i].setNumberOfPixels(blueArray[i]);
+      }
 
       // print out information for RED
       histColorRed.printHistogram();
