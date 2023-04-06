@@ -29,7 +29,6 @@ public class HistImages {
     StringBuilder line = new StringBuilder();
     String result = "";
     if (this.histImages.length == 0) {
-      System.out.println("Sorry, but images value are empty");
       result = "{}";
     } else {
       for (HistImage histImage : this.histImages) {
