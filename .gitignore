@@ -40,3 +40,5 @@ java/build/**
 # files
 *.txt
 *.png
+db/hist_ex_dump.sql
+db/test.sql
