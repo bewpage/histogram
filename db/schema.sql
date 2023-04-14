@@ -10,11 +10,12 @@ USE hist_ex;
 
 CREATE TABLE hist_colors
 (
+    id               int AUTO_INCREMENT,
     image_id         int              NOT NULL,
     color            varchar(5)       NOT NULL,
     intensity        tinyint unsigned NOT NULL,
     number_of_pixels tinyint unsigned DEFAULT NULL,
-    PRIMARY KEY (`image_id`),
+    PRIMARY KEY (id),
     CONSTRAINT `fk_hist_image_id` FOREIGN KEY (image_id) REFERENCES `hist_images` (id) ON DELETE CASCADE,
     CONSTRAINT `hist_colors_chk_1` CHECK (color in ('red', 'green', 'blue'))
 );
